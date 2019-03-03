@@ -9,8 +9,6 @@
  "bazil.org/fuse/fs",
  "bazil.org/fuse/fs/fstestutil",
  "golang.org/x/net/context",
-
-
  ]
 # ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
 #

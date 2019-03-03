@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../../lib/docsConn"
+	"docs-fuse/lib/docsConn"
 
 	"flag"
 	"fmt"
