@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"strconv"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+/*
 func Dump(resp *http.Response) {
 	dump1, err := httputil.DumpRequest(resp.Request, true)
 	if err != nil {
@@ -27,21 +27,7 @@ func Dump(resp *http.Response) {
 	log.Printf("dump response: %q\n", dump2)
 	return
 }
-
-type DocsError struct {
-	s          string
-	StatusCode int
-}
-
-func (e *DocsError) Error() string {
-	return e.s
-}
-func newDocsError(StatusCode int, str string, args ...interface{}) *DocsError {
-	var error DocsError
-	error.s = fmt.Sprintf(str, args...)
-	error.StatusCode = StatusCode
-	return &error
-}
+*/
 
 type DocsConn struct {
 	username         string
@@ -207,4 +193,39 @@ func (this *DocsConn) GetFileData(id string) ([]byte, error) {
 		return nil, fmt.Errorf("GetFileData get error: %s", err.s)
 	}
 	return body, nil
+}
+
+type TagList struct {
+	Tags []struct {
+		Id     string
+		Name   string
+		Color  string
+		Parent string
+	} `json:"tags"`
+}
+
+func (this *DocsConn) GetTags() (*TagList, error) {
+	body, err := this.get("/api/tag/list", "")
+	if err != nil {
+		return nil, fmt.Errorf("GetTags get error: %s", err.s)
+	}
+	var result TagList
+	err2 := json.Unmarshal(body, &result)
+	if err2 != nil {
+		return nil, fmt.Errorf("GetTags unmarshal error: %s", error.Error(err2))
+	}
+	return &result, nil
+}
+
+func (this *DocsConn) GetDocumentListByTag(tagName string) (*DocumentList, error) {
+	body, err := this.get("api/document/list", "search=tag:"+tagName)
+	if err != nil {
+		return nil, fmt.Errorf("GetDocumentList get error: %s", err.s)
+	}
+	var result DocumentList
+	err2 := json.Unmarshal(body, &result)
+	if err2 != nil {
+		return nil, fmt.Errorf("GetDocumentList unmarshal error: %s", error.Error(err2))
+	}
+	return &result, nil
 }
